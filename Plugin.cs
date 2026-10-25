@@ -19,6 +19,7 @@ namespace TooMuchInfo
         void Start()
         {
             HarmonyPatches.ApplyHarmonyPatches();
+            WTMITag.Looping();
         }
 
         static string CheckCosmetics(VRRig rig)
@@ -125,6 +126,7 @@ namespace TooMuchInfo
                 { "CustomMaterial", new string[] { "CUSTOMCOSMETICS", "707070" } },
                 { "I like cheese", new string[] { "RECROOMRIG", "FE8232" } },
                 { "silliness", new string[] { "SILLINESS", "FFBAFF" } },
+                { "WayTooMuchInfo", new string[] { "WAYTOOMUCHINFO", "7E47FF" } },
                 { "emotewheel", new string[] { "EMOTEWHEEL", "1E2030" } }
             };
 
