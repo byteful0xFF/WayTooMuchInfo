@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using GorillaNetworking;
 using HarmonyLib;
 using Photon.Pun;
@@ -220,6 +220,69 @@ namespace TooMuchInfo
             return null;
         }
 
+        static string GetPing()
+        {
+            try
+            {
+                return "PING " + PhotonNetwork.GetPing() + "MS";
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        static string GetCurrentRoomInfo()
+        {
+            try
+            {
+                Room currentRoom = PhotonNetwork.CurrentRoom;
+                if (currentRoom == null)
+                    return null;
+
+                return "ROOM " + currentRoom.Name + " (" + currentRoom.PlayerCount + "/" + currentRoom.MaxPlayers + ")";
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        static string GetPhotonRegion()
+        {
+            try
+            {
+                string region = PhotonNetwork.CloudRegion;
+                if (!string.IsNullOrEmpty(region))
+                    return "REGION " + region.ToUpper();
+            }
+            catch
+            {
+            }
+
+            return null;
+        }
+
+        static string GetCosmeticCount(VRRig rig)
+        {
+            try
+            {
+                if (rig.cosmeticSet == null || rig.cosmeticSet.items == null)
+                    return null;
+
+                int count = 0;
+                foreach (CosmeticsController.CosmeticItem cosmetic in rig.cosmeticSet.items)
+                    if (!cosmetic.isNullItem)
+                        count++;
+
+                return count > 0 ? "COSMETICS " + count : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         static string FormatColor(Color color)
         {;
             return "COLOR <color=red>" + Math.Round(color.r * 9).ToString() +
@@ -259,6 +322,18 @@ namespace TooMuchInfo
 
                     string mods = CheckMods(rig);
                     if (mods != null) lines.Add("MODS " + mods);
+
+                    string roomInfo = GetCurrentRoomInfo();
+                    if (roomInfo != null) lines.Add(roomInfo);
+
+                    string region = GetPhotonRegion();
+                    if (region != null) lines.Add(region);
+
+                    string ping = GetPing();
+                    if (ping != null) lines.Add(ping);
+
+                    string cosmeticCount = GetCosmeticCount(rig);
+                    if (cosmeticCount != null) lines.Add(cosmeticCount);
 
                     string tagged = GetTaggedPlayer(rig);
                     if (tagged != null) lines.Add(tagged);
