@@ -283,6 +283,58 @@ namespace TooMuchInfo
             }
         }
 
+        static string GetModCount(VRRig rig)
+        {
+            try
+            {
+                if (rig == null || rig.Creator == null)
+                    return null;
+
+                int count = rig.Creator.GetPlayerRef().CustomProperties.Count;
+                return count > 0 ? "MOD COUNT " + count : null;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        static string GetCustomPropertyValues(VRRig rig)
+        {
+            try
+            {
+                if (rig == null || rig.Creator == null)
+                    return null;
+
+                Dictionary<string, object> customProps = new Dictionary<string, object>();
+                foreach (DictionaryEntry entry in rig.Creator.GetPlayerRef().CustomProperties)
+                    customProps[entry.Key.ToString()] = entry.Value;
+
+                if (customProps.Count == 0)
+                    return null;
+
+                List<string> entries = new List<string>();
+                int index = 0;
+                foreach (KeyValuePair<string, object> prop in customProps)
+                {
+                    string value = prop.Value == null ? "NULL" : prop.Value.ToString();
+                    if (value.Length > 24)
+                        value = value.Substring(0, 24) + "...";
+
+                    entries.Add(prop.Key + "=" + value);
+                    index++;
+                    if (index >= 5)
+                        break;
+                }
+
+                return "PROPS " + string.Join(", ", entries);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         static string FormatColor(Color color)
         {;
             return "COLOR <color=red>" + Math.Round(color.r * 9).ToString() +
@@ -322,6 +374,12 @@ namespace TooMuchInfo
 
                     string mods = CheckMods(rig);
                     if (mods != null) lines.Add("MODS " + mods);
+
+                    string modCount = GetModCount(rig);
+                    if (modCount != null) lines.Add(modCount);
+
+                    string customProps = GetCustomPropertyValues(rig);
+                    if (customProps != null) lines.Add(customProps);
 
                     string roomInfo = GetCurrentRoomInfo();
                     if (roomInfo != null) lines.Add(roomInfo);
